@@ -1,0 +1,62 @@
+\chapter{TINJAUAN PUSTAKA}
+\label{bab:2}
+
+Penelitian di bidang perencanaan lintasan (\textit{trajectory planning}) untuk optimasi performa motor servo industri terus mengalami pemutahiran, terutama dalam meminimalkan osilasi mekanis tanpa menurunkan produktivitas kecepatan gerak aktuator. Dinamika pergerakan meja geser \textit{linear stage} berbasis \textit{ball screw} sangat sensitif terhadap karakteristik turunan fungsi posisi terhadap waktu. Penggunaan profil kecepatan tradisional seperti \textit{trapezoidal} terbukti menyisakan getaran transien yang mengganggu keakuratan pembacaan akhir karena nilai \textit{jerk} yang tidak kontinu pada batas perpindahan fase \parencite{schnegas2024trajectory}. Penerapan profil gerak halus berbasis kurva linier berlapis atau \textit{S-Curve} orde tiga terbukti menjadi solusi paling efektif untuk menekan nilai komponen sentakan fisik tersebut.
+
+Persamaan kinematika pembentuk profil gerak \textit{S-Curve} didasarkan pada pembatasan nilai \textit{jerk} konstan pada fase akselerasi awal dan deselerasi akhir. Persamaan kecepatan ($v$) terhadap rentang waktu ($t$) pada fase pembentukan lengkungan kurva didefinisikan melalui model matematika kuadratik berikut:
+
+\begin{equation}
+v(t) = c_0 + c_1t + c_2t^2
+\end{equation}
+
+Di mana $c_0, c_1,$ dan $c_2$ merupakan koefisien polinomial konstan yang merepresentasikan kondisi batas transisi kecepatan awal. Dari persamaan fungsi kecepatan kuadratik di atas, fungsi percepatan ($a$) dan fungsi sentakan (\textit{jerk}, $j$) secara sistematis diturunkan melalui operasi diferensial kalkulus berurutan sebagai berikut:
+
+\begin{equation}
+a(t) = \frac{dv(t)}{dt} = c_1 + 2c_2t
+\end{equation}
+
+\begin{equation}
+j(t) = \frac{da(t)}{dt} = \frac{d^2v(t)}{dt^2} = 2c_2
+\end{equation}
+
+Berdasarkan Persamaan (3), terlihat jelas bahwa nilai \textit{jerk} dikunci pada nilai konstan linear ($2c_2$), yang berarti laju percepatan motor servo berubah secara kontinu, bukan melonjak seketika secara ekstrem seperti pada kasus profil \textit{trapezoidal}. Namun, implikasi dari implementasi formula matematis ini adalah tingginya beban pemrosesan pada unit komputasi tertanam karena prosesor harus menghitung matriks kalkulasi polinomial tersebut secara berulang pada tiap interupsi \textit{timer} \parencite{liu2023time}. 
+
+Pemanfaatan arsitektur prosesor berinti ganda (\textit{dual-core}) memberikan lompatan teknologi yang masif, di mana isolasi proses interupsi generator pulsa dapat dipisahkan secara fisik dari sub-rutin kalkulasi persamaan kuadratik \textit{S-Curve} \parencite{liu2026intelligent}. Di samping itu, keandalan sistem penggerak servo di area industri sangat dipengaruhi oleh kualitas fisik pengiriman sinyal kontrol. Sinyal pulsa berkecepatan tinggi berfrekuensi tinggi rawan terdistorsi oleh interferensi elektromagnetik akibat induksi medan magnet motor dan pensaklaran inverter internal \textit{servo amplifier}. Penggunaan pengkabelan berpasangan terpilin yang digerakkan oleh sirkuit terintegrasi \textit{differential line driver} merupakan syarat mutlak untuk menjamin kestabilan pengiriman pulsa kontrol tanpa kehilangan data \parencite{li2017implementation}.
+
+Untuk memetakan posisi kebaruan (\textit{novelty}) dari penelitian ini terhadap rekam jejak riset terdahulu, disusunlah sebuah matriks komparasi pustaka komprehensif yang disajikan pada Tabel \ref{tab:komparasi}.
+
+\begin{table}[htbp]
+\centering
+\caption{Matriks Perbandingan Tinjauan Pustaka}
+\label{tab:komparasi}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Parameter Perbandingan} & \textbf{[1]} & \textbf{[2]} & \textbf{[3]} & \textbf{[4]} & \textbf{Tugas Akhir} \\ \midrule
+\textbf{Profil Pergerakan} & & & & & \\
+- \textit{Rectangular} & & & & & \textbf{$\checkmark$} \\
+- \textit{Trapezoidal} & & & & $\checkmark$ & \textbf{$\checkmark$} \\
+- \textit{S-Curve} & $\checkmark$ & $\checkmark$ & $\checkmark$ & & \textbf{$\checkmark$} \\ \midrule
+\textbf{Sistem Pemroses} & & & & & \\
+- \textit{Single-Core / Standar} & & $\checkmark$ & & & \\
+- \textit{Dual-Core} & & & & & \textbf{$\checkmark$} \\
+- \textit{PLC / PC / Industri} & $\checkmark$ & & $\checkmark$ & $\checkmark$ & \\ \midrule
+\textbf{Antarmuka Sinyal} & & & & & \\
+- \textit{Open Collector} & & $\checkmark$ & & $\checkmark$ & \\
+- \textit{Diff. Line Driver / High Speed} & $\checkmark$ & & $\checkmark$ & & \textbf{$\checkmark$} \\ \midrule
+\textbf{Aktuator Pengujian} & & & & & \\
+- \textit{Simulasi / Manipulator} & & $\checkmark$ & & & \\
+- \textit{Linear Stage / Modul Servo} & $\checkmark$ & & $\checkmark$ & $\checkmark$ & \textbf{$\checkmark$} \\ \midrule
+\textbf{Skenario Evaluasi Getaran} & & & & & \\
+- \textit{Mathematical Analysis Only} & & $\checkmark$ & & & \\
+- \textit{Sensor / Encoder Analysis} & $\checkmark$ & & $\checkmark$ & $\checkmark$ & \textbf{$\checkmark$} \\
+- \textit{Liquid Slosh Physical Test} & & & & & \textbf{$\checkmark$} \\ \bottomrule
+\end{tabular}%
+}
+\end{table}
+
+Melalui analisis mendalam terhadap isi Tabel \ref{tab:komparasi}, terlihat dengan jelas posisi kebaruan dari penelitian tugas akhir ini. Riset oleh \textcite{liu2023time} berfokus sangat kuat pada perancangan matematis optimasi S-Curve dan pembatasan nilai \textit{jerk}, namun metode pembuktiannya masih didominasi oleh simulasi perangkat lunak atau diaplikasikan pada kontrol manipulator robotik standar yang diproses menggunakan inti tunggal. 
+
+Di sisi lain, riset terapan industri yang dilakukan oleh \textcite{li2017implementation}, \textcite{liu2026intelligent}, serta \textcite{schnegas2024trajectory} telah menguji performa S-Curve langsung pada perangkat keras penggerak servo linier nyata, tetapi arsitektur sistem pengontrolnya bersandar pada perangkat PC industri komersial, PLC kelas atas, atau pengontrol CNC internal bawaan pabrikan yang bersifat sistem tertutup \textit{(closed architecture)}. 
+
+Selain itu, hampir seluruh referensi literatur yang ada langsung melompati perbandingan ke profil canggih tanpa menyertakan analisis dasar terhadap profil \textit{rectangular}, serta hanya mengandalkan grafik data numerik dari perangkat lunak untuk menganalisis respons getaran. Penelitian tugas akhir ini mengisi celah kosong tersebut dengan merancang pengujian komparatif tiga profil gerak (\textit{rectangular, trapezoidal, S-Curve}) di dalam satu sistem kontrol tertanam berbasis mikrokontroler \textit{dual-core} mandiri berbiaya rendah dengan transmisi \textit{differential line driver}. Selanjutnya, validasi empiris performa peredaman getaran dibuktikan secara fisik, visual, dan eksperimental melalui pengamatan langsung terhadap efek riak air pada pengujian \textit{liquid slosh control}. Keterangan nomor referensi pada Tabel 1 merujuk pada: [1] \textcite{li2017implementation}, [2] \textcite{liu2023time}, [3] \textcite{liu2026intelligent}, dan [4] \textcite{schnegas2024trajectory}.

@@ -1,0 +1,41 @@
+\documentclass[12pt, a4paper, onecolumn, oneside, final]{report}
+\PassOptionsToPackage{backend=biber}{biblatex}
+
+\input{a0_identitas}
+\input{preambel}
+
+\begin{document}
+
+% Halaman Judul Luar (Format Proposal Prima)
+\input{00haljudul_01.tex}
+
+\pagenumbering{roman}
+
+% Bagian laporan akhir yang tidak dipakai di proposal dinonaktifkan
+% \input{00haljudul_02.tex}
+% \input{00suratpernyataan}
+% \input{00Halpengesahan.tex}
+\input{00abstractid.tex}
+
+% Halaman Persetujuan (Format Proposal Prima)
+\input{00HalPersetujuan}
+
+% Kata Pengantar
+% \input{00Katapengantar.tex}
+
+% Daftar Isi, Daftar Gambar, Daftar Tabel
+\input{00daftarisi}
+
+\pagenumbering{arabic}
+
+% Bab 1 sampai Bab 5
+\input{01Bab1.tex}
+\input{01Bab2.tex}
+\input{01Bab3.tex}
+\input{01Bab4.tex}
+\input{01Bab5.tex}
+
+% Daftar Pustaka
+\input{02Daftar_pustaka}
+
+\end{document}

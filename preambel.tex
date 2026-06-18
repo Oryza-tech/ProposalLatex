@@ -1,0 +1,76 @@
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% --- PENGATURAN MARGIN (Kiri 4cm, Atas 4cm, Kanan 3cm, Bawah 3cm) ---
+\usepackage[top=3cm, left=4cm, bottom=3cm, right=3cm]{geometry}
+
+% --- PENGATURAN FORMAT JUDUL BAB ---
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries\centering}{\MakeUppercase{\chaptertitlename}\ \Roman{chapter}}{0pt}{\Large}
+% Angka -30pt ini menarik judul ke atas (menghapus space default bawaan LaTeX)
+\titlespacing*{\chapter}{0pt}{-30pt}{20pt}
+
+% --- PENGATURAN FORMAT UKURAN SUB-BAB (1.1, 1.2, dst) ---
+\titleformat{\section}
+  {\normalfont\normalsize\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{lastpage}
+\usepackage{verbatim}
+\usepackage{setspace}
+
+% Notasi Matematika
+\usepackage{stmaryrd}
+\usepackage{mathtools}
+\usepackage{amsmath, amssymb}
+
+% Grafik dan Gambar
+\usepackage{graphicx}
+\graphicspath{{Gambar/}}
+\usepackage{float}
+\usepackage[hang,nooneline,scriptsize,md]{subfigure}
+\usepackage[subfigure]{tocloft}
+\usepackage{parskip}
+
+% Indentasi
+\usepackage{indentfirst}
+\setlength\parindent{1cm}
+\usepackage{scrextend}
+\usepackage{fancyhdr}
+
+% Font Standar Times/TNR Replacement
+\usepackage{pslatex}
+\usepackage{booktabs}
+\usepackage{multirow}
+
+% Format Penomoran Judul
+\renewcommand{\thesection}{\arabic{chapter}.\arabic{section}\hspace{0.05cm}}
+\renewcommand{\thesubsection}{\arabic{chapter}.\arabic{section}.\arabic{subsection}\hspace{-0.25cm}}
+\renewcommand{\thesubsubsection}{\arabic{chapter}.\arabic{section}.\arabic{subsection}.\arabic{subsubsection}\hspace{-0.35cm}}
+
+% --- UBAH LABEL BAHASA INGGRIS KE INDONESIA ---
+\renewcommand{\figurename}{Gambar}
+\renewcommand{\tablename}{Tabel}
+\usepackage[labelsep=space]{caption}
+
+% Pengaturan Format Sitasi Otomatis (BibLaTeX)
+\usepackage[backend=biber, style=authoryear]{biblatex}
+\addbibresource{references.bib}
+
+\renewcommand{\chaptername}{BAB}
+
+% Paket Embed Kode & Tabel
+\usepackage{listings}
+\lstset{
+    basicstyle=\small,
+    columns=fullflexible,
+    frame=single,
+}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{array}

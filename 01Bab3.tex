@@ -1,0 +1,26 @@
+\chapter{TUJUAN DAN MANFAAT PENELITIAN}
+\label{bab:3}
+
+\section{Tujuan Penelitian}
+Berdasarkan rumusan masalah yang telah diuraikan sebelumnya, tujuan utama yang ingin dicapai dari pelaksanaan penelitian tugas akhir ini adalah sebagai berikut:
+\begin{enumerate}
+    \item Merancang, mensimulasikan, dan menguji algoritma pemrograman kinematika gerak berorde tiga untuk menggenerasikan profil pergerakan \textit{rectangular, trapezoidal}, dan \textit{S-Curve} secara bergantian pada unit pemroses mikrokontroler \textit{dual-core} secara \textit{real-time}.
+    \item Membuat desain dan mengimplementasikan modul perangkat keras tambahan berupa rangkaian elektronik \textit{differential line driver} berbasis chip transceiver industri guna mengonversi pulsa kontrol menjadi sinyal diferensial berstandar RS-422 menuju \textit{Servo Amplifier} Melservo-J2-Super.
+    \item Menganalisis parameter performa dinamis motor servo AC secara komparatif berdasarkan data empiris nilai kesalahan posisi (\textit{positional error}), durasi \textit{settling time} transien, serta memvalidasi kehalusan pergerakan meredam sentakan mekanis melalui visualisasi metode uji \textit{liquid slosh control} menggunakan media cairan pada modul ED4270m.
+\end{enumerate}
+
+\section{Manfaat Penelitian}
+Pelaksanaan riset rancang bangun dan analisis komparatif ini diharapkan mampu memberikan kontribusi yang signifikan, baik dari aspek pengembangan keilmuan maupun aplikasi praktis di lapangan:
+\begin{enumerate}
+    \item \textbf{Manfaat Teoritis (Akademik):}
+    \begin{itemize}
+        \item Memberikan kontribusi referensi ilmiah mengenai pemodelan matematika terapan untuk pembatasan nilai \textit{jerk} pada sistem kendali posisi non-linier menggunakan perangkat keras berbiaya rendah.
+        \item Menyediakan paradigma baru dalam metode pemrograman sistem tertanam mengenai teknik distribusi beban kerja komputasi numerik berat memanfaatkan teknologi \textit{multitasking dual-core} secara deterministik.
+    \end{itemize}
+    \item \textbf{Manfaat Praktis (Aplikatif):}
+    \begin{itemize}
+        \item Menyediakan alternatif sistem kendali gerak mandiri berbiaya murah namun memiliki keandalan tinggi dan kebal terhadap derau elektro-mekanis setara standar industri komersial.
+        \item Membantu memperpanjang usia pakai dari komponen mekanis presisi tinggi pada industri, karena keberhasilan algoritma \textit{S-Curve} secara langsung meminimalkan keausan akibat hantaman gaya inersia getaran balik.
+        \item Menghasilkan purwarupa fisik sistem pengontrol beserta draf dokumen analitis komparatif yang siap diintegrasikan sebagai modul praktikum kendali posisi presisi tinggi di Laboratorium Mekatronika.
+    \end{itemize}
+\end{enumerate}
