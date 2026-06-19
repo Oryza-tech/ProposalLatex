@@ -2,120 +2,108 @@
 \label{bab:1}
 
 \section{Latar Belakang}
-Di era industri modern, tuntutan terhadap sistem manufaktur dan otomatisasi
-berpresisi tinggi bergerak selaras dengan kebutuhan optimasi performa mesin.
-Perangkat berbasis kendali posisi, seperti mesin \textit{Computer Numerical
-Control} (CNC), robot lengan industri, hingga mesin pengemasan otomatis, sangat
-bergantung pada keandalan sistem penggerak aktuator posisi. Motor servo AC
-merupakan aktuator standar yang paling banyak digunakan pada lini produksi
-berskala industri karena keunggulannya dalam menghasilkan torsi yang konstan,
-kecepatan tinggi, serta umpan balik posisi yang instan melalui sistem
-\textit{encoder}. Salah satu sistem penggerak servo industri yang memiliki rekam
-jejak keandalan tinggi adalah \textit{Servo Amplifier} Mitsubishi
-Melservo-J2-Super (MR-J2S-10A). Namun, akurasi penargetan posisi dan ketahanan
-fisik komponen mekanis transisi tidak hanya ditentukan oleh spesifikasi
-perangkat keras motor servo itu sendiri, melainkan sangat dipengaruhi oleh
-kualitas algoritma \textit{trajectory planning} (perencanaan lintasan) yang
-tertanam pada sistem kendali.
+
+Perkembangan industri manufaktur dan otomasi modern menuntut sistem kendali gerak presisi tinggi dengan kecepatan operasional yang optimal. Motor servo AC menjadi aktuator standar pada berbagai aplikasi seperti mesin \textit{Computer Numerical Control} (CNC), robot industri, dan sistem pengemasan otomatis, karena kemampuannya menghasilkan torsi konstan, kecepatan tinggi, serta umpan balik posisi instan melalui \textit{encoder}. Salah satu sistem penggerak servo yang banyak digunakan adalah \textit{Servo Amplifier} Mitsubishi Melservo-J2-Super (MR-J2S-10A). Namun, akurasi penargetan posisi dan ketahanan komponen mekanis tidak hanya ditentukan oleh spesifikasi motor, melainkan sangat dipengaruhi oleh kualitas algoritma \textit{trajectory planning} yang tertanam pada sistem kendali.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.27\textwidth]{Gambar/ServoAmp.png}
     \caption{Servo Amplifier Mitsubishi MR-J2S-10A}
-    \label{fig gambar_bab1}
+    \label{fig:servo_amp}
 \end{figure}
 
-Pada praktiknya, standar aplikasi industri modern umumnya mengadopsi profil
-pergerakan \textit{trapezoidal} (percepatan linier) untuk mengontrol akselerasi
-dan deselerasi aktuator \parencite{schnegas2024trajectory}. Walaupun laju
-kecepatannya berangsur konstan, profil \textit{trapezoidal} memiliki cacat
-matematis mendasar berupa perubahan percepatan yang diskontinu pada titik-titik
-transisi sudut kurva kecepatan. Ketidakkontinuan ini menghasilkan nilai sentakan
-mekanis (\textit{jerk}) yang tak terhingga pada setiap titik belok kurva. Di
-sisi lain, profil pergerakan \textit{rectangular} (kecepatan konstan) merupakan
-metode tanpa kontrol kelenturan di mana motor dipaksa melompat dari kondisi diam
-menuju kecepatan penuh secara instan. Penerapan profil \textit{rectangular} di
-industri modern dianggap sebagai kegagalan desain karena memicu lonjakan arus
-listrik (\textit{current spike}) yang ekstrem serta benturan mekanis yang
-destruktif. Meski demikian, profil \textit{rectangular} tetap diikutsertakan
-dalam penelitian ini murni sebagai pembanding batas bawah \textit{(worst-case
-baseline)} untuk mengukur kuantitas anomali gerakan jika sistem berjalan tanpa
-perencanaan lintasan.
-
-Pada sistem mekanis nyata yang memiliki fleksibilitas dan keterbatasan inersia,
-seperti sistem transmisi \textit{linear ball screw} yang terdapat pada modul
-laboratorium ED4270m, nilai \textit{jerk} yang tinggi pada transisi gerak memicu
-timbulnya getaran sisa (\textit{residual vibration}) yang parah. Getaran
-tersebut tidak hanya memperpanjang durasi waktu pemantapan posisi
-(\textit{settling time}) aktuator untuk mencapai kondisi benar-benar diam
-(\textit{steady state}), melainkan juga mempercepat keausan fisik komponen
-kritis seperti \textit{ball screw} dan \textit{bearing}. Untuk menanggulangi
-fenomena osilasi tersebut, algoritma \textit{S-Curve trajectory planning}
-berorde tiga diterapkan. Profil \textit{S-Curve} membatasi nilai \textit{jerk}
-pada batas konstan tertentu sehingga kurva percepatan naik secara landai
-membentuk kurva halus menyerupai huruf ``S''. Hal ini memastikan transisi gaya
-mekanis di dalam komponen berjalan mulus dan mengeliminasi eksitasi getaran
-frekuensi tinggi pada struktur mekanis.
+Pada praktik industri, profil gerak \textit{trapezoidal} umumnya menjadi standar
+bawaan (\textit{default}) pada banyak perangkat lunak kendali servo
+\parencite{schnegas2024trajectory} dan sering diadopsi karena kesederhanaan
+implementasinya \parencite{liu2026intelligent}. Namun, profil ini memiliki
+kelemahan fundamental: perubahan percepatan yang diskontinu pada titik transisi
+menghasilkan nilai \textit{jerk} tak terhingga \parencite{9310134}. Pada sistem
+mekanis nyata seperti \textit{linear ball screw} pada modul ED4270m, fenomena
+ini memicu getaran sisa (\textit{residual vibration}) yang memperpanjang waktu
+pemantapan posisi (\textit{settling time}) dan mempercepat keausan komponen
+kritis seperti \textit{bearing} dan \textit{ball screw}.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.4\textwidth, angle=-90]{Gambar/ED-4270m.jpg}
+    \includegraphics[width=0.3\textwidth, angle=-90]{Gambar/ED-4270m.jpg}
     \caption{Modul Laboratorium ED4270m}
-    \label{fig gambar2_bab1}
+    \label{fig:ed4270m}
 \end{figure}
 
-Kendati menawarkan performa mekanis yang superior, implementasi algoritma
-\textit{S-Curve} pada sistem tertanam (\textit{embedded system}) memiliki
-kendala komputasi yang signifikan. Persamaan matematis pembentukan lintasan
-\textit{S-Curve} melibatkan kalkulasi polinomial orde tiga, operasi kuadratik,
-dan pembagian pecahan secara simultan yang harus diselesaikan dalam orde
-mikrodetik. Jika kalkulasi berat ini dibebankan pada mikrokontroler standar
-berinti tunggal (\textit{single-core}), siklus interupsi pembawa pulsa menuju
-\textit{driver} servo akan terganggu, memicu terjadinya \textit{jitter} sinyal
-yang merusak akurasi posisi. Oleh karena itu, penggunaan arsitektur
-mikrokontroler \textit{dual-core} menjadi solusi esensial dalam penelitian ini,
-di mana beban kerja dibagi secara deterministik: \textit{Core 0} didedikasikan
-penuh untuk kalkulasi matematika profil pergerakan dan komunikasi data,
-sedangkan \textit{Core 1} berfokus tanpa interupsi untuk membangkitkan rangkaian
-pulsa kecepatan tinggi secara presisi.
+Untuk mengatasi masalah tersebut, algoritma \textit{S-Curve trajectory planning}
+orde tiga menjadi solusi unggul. Profil \textit{S-Curve} membatasi nilai
+\textit{jerk} pada batas konstan sehingga percepatan berubah secara landai
+membentuk kurva halus menyerupai huruf ``S''. Menurut \textcite{9310134}, profil
+\textit{S-Curve} merupakan modifikasi dari profil \textit{trapezoidal} dengan
+mengganti lonjakan percepatan menjadi \textit{ramp-up} dan \textit{ramp-down}
+yang membentuk kurva percepatan halus. Sebagaimana diilustrasikan pada Gambar
+\ref{fig:s_curve_7segments}, profil \textit{S-Curve} umumnya terdiri dari 7
+segmen, dengan tiga parameter waktu utama: \textit{constant-jerk time} ($T_j$),
+\textit{constant-acceleration time} ($T_A$), dan \textit{constant-velocity time}
+($T_V$). Transisi yang halus ini mengeliminasi eksitasi getaran frekuensi tinggi
+pada struktur mekanis.
 
-Selain stabilitas komputasi pengontrol, integritas transmisi sinyal dari
-mikrokontroler menuju \textit{Servo Amplifier} MR-J2S-10A juga memegang peranan
-krusial. Sinyal pulsa berkecepatan tinggi berfrekuensi tinggi rawan terdistorsi
-oleh interferensi elektromagnetik akibat induksi medan magnet motor dan
-pensaklaran inverter internal \textit{servo amplifier}. Penggunaan pengkabelan
-berpasangan terpilin yang digerakkan oleh sirkuit terintegrasi
-\textit{differential line driver} merupakan syarat mutlak untuk menjamin
-kestabilan pengiriman pulsa kontrol tanpa kehilangan data. Sebagai solusinya,
-sirkuit antarmuka \textit{differential line driver} diintegrasikan guna mengubah
-sinyal pulsa menjadi sepasang sinyal diferensial berstandar RS-422, sehingga
-gangguan elektromagnetik dari lingkungan luar dapat diredam sepenuhnya melalui
-mekanisme penolakan modus bersama \textit{(common-mode rejection)} di sisi
-penerima amplifier servo.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{Gambar/seven_segment_s_curve}
+    \captionsetup{justification=centering}
+    \caption{Bentuk umum profil \textit{S-Curve} 7 segmen (diadaptasi dari \textcite{fang2023sinusoidal})}
+    \label{fig:s_curve_7segments}
+\end{figure}
 
-Guna membuktikan validitas performa peredaman getaran dari algoritma
-\textit{S-Curve} yang dirancang terhadap metode konvensional, penelitian tugas
-akhir ini mengintegrasikan sebuah metode pengujian eksperimental berupa
-\textit{liquid slosh control} (pengendalian riak cairan). Dengan menaruh wadah
-berisi cairan di atas meja geser \textit{linear stage} modul ED4270m,
-efektivitas peredaman efek sentakan mekanis dari profil \textit{rectangular},
-\textit{trapezoidal}, dan \textit{S-Curve} dapat diamati secara empiris dan
-visual melalui stabilitas permukaan cairan serta riak gelombang yang terbentuk
-selama fase akselerasi dan deselerasi.
+Kendati menawarkan performa superior, implementasi \textit{S-Curve} pada sistem
+tertanam menghadapi kendala komputasi. Kalkulasi profil ini melibatkan
+perhitungan polinomial orde tiga yang berulang sehingga secara signifikan
+meningkatkan kompleksitas algoritma \parencite{liu2023time}. Pada realisasinya,
+untuk mencapai kontrol \textit{real-time}, operasi matematis seperti kalkulasi
+kuadratik dan pembagian pecahan harus mampu diselesaikan dalam orde mikrodetik
+oleh mikrokontroler. Jika pemrosesan berat ini dibebankan pada mikrokontroler
+\textit{single-core}, siklus interupsi pembangkit pulsa menuju servo akan
+terganggu dan memicu \textit{jitter} sinyal yang merusak akurasi posisi. Oleh
+karena itu, penggunaan arsitektur \textit{dual-core} diusulkan dalam penelitian
+ini sebagai solusi esensial dengan pemisahan tugas deterministik, di mana proses
+interupsi generator pulsa diisolasi secara fisik dari sub-rutin kalkulasi
+\textit{S-Curve}.
+
+Selain stabilitas komputasi, integritas transmisi sinyal ke \textit{Servo
+Amplifier} MR-J2S-10A juga krusial. Sinyal pulsa frekuensi tinggi rawan
+terdistorsi oleh interferensi elektromagnetik dari induksi motor dan inverter
+servo. Sebagai solusi perancangan perangkat keras guna mengatasi hal tersebut,
+penggunaan sirkuit \textit{differential line driver} berstandar RS-422 dengan
+mekanisme \textit{common-mode rejection} menjadi syarat mutlak untuk menjamin
+kestabilan pengiriman pulsa.
+
+Perkembangan terkini menunjukkan bahwa profil \textit{S-Curve} orde lebih tinggi
+(orde-4) dapat memberikan \textit{smoothness} yang lebih baik. Namun,
+pengadopsian metode orde tinggi menuntut upaya matematis yang masif dan memicu
+lonjakan beban komputasi secara drastis \parencite{tatte2026optimized}. Mengacu
+pada fakta tersebut, deduksi logis yang ditarik dalam penelitian ini adalah:
+untuk sistem tertanam dengan sumber daya pemrosesan yang terbatas, implementasi
+profil orde-3 tetap menjadi pilihan kompromi yang paling relevan.
+
+Berdasarkan latar belakang tersebut, penelitian ini mengusulkan implementasi
+\textit{S-Curve trajectory planning} pada sistem kendali motor servo AC berbasis
+mikrokontroler \textit{dual-core} dengan antarmuka \textit{differential line
+driver}. Untuk membuktikan efektivitas peredaman getaran, dilakukan uji
+komparatif antara profil \textit{trapezoidal} dan \textit{S-Curve} melalui
+parameter \textit{positional error}, \textit{settling time}, serta validasi
+visual menggunakan metode \textit{liquid slosh control} pada modul ED4270m.
 
 \section{Perumusan Masalah}
-Berdasarkan deskripsi mendalam pada latar belakang di atas, rumusan masalah dalam penelitian tugas akhir ini dirancang sebagai berikut:
+
+Berdasarkan uraian latar belakang, rumusan masalah penelitian ini adalah:
 \begin{enumerate}
-    \item Bagaimana memodelkan persamaan matematis orde tiga dan mengimplementasikan arsitektur kode program pemisahan tugas (\textit{multitasking dual-core}) untuk membangkitkan profil pergerakan \textit{rectangular, trapezoidal}, dan \textit{S-Curve} secara \textit{real-time}?
-    \item Bagaimana merancang sirkuit antarmuka perangkat keras berbasis \textit{differential line driver} guna menjaga integritas transmisi sinyal pulsa kendali frekuensi tinggi menuju \textit{servo amplifier} Melservo-J2-Super?
-    \item Bagaimana hasil perbandingan kinerja empiris dari ketiga profil pergerakan tersebut ditinjau dari parameter respons \textit{settling time}, \textit{positional error} via \textit{encoder feedback}, serta tingkat osilasi permukaan air pada metode pengujian \textit{liquid slosh control}?
+    \item Bagaimana memodelkan persamaan matematis orde tiga dan mengimplementasikan arsitektur pemrograman \textit{multitasking dual-core} untuk membangkitkan profil pergerakan \textit{trapezoidal} dan \textit{S-Curve} secara \textit{real-time}?
+    \item Bagaimana merancang sirkuit antarmuka \textit{differential line driver} untuk menjaga integritas transmisi sinyal pulsa frekuensi tinggi menuju \textit{servo amplifier} Melservo-J2-Super?
+    \item Bagaimana hasil perbandingan kinerja kedua profil gerak ditinjau dari parameter \textit{settling time}, \textit{positional error} via \textit{encoder feedback}, serta tingkat osilasi permukaan air pada metode uji \textit{liquid slosh control}?
 \end{enumerate}
 
 \section{Pembatasan Masalah}
-Agar arah penelitian tetap fokus dan terukur sesuai dengan target kompetensi, batasan masalah ditetapkan sebagai berikut:
+
+Agar penelitian tetap fokus dan terukur, batasan masalah ditetapkan sebagai berikut:
 \begin{enumerate}
-    \item Validasi eksperimental dan pengambilan data dinamis murni dilakukan menggunakan unit perangkat keras laboratorium berupa Modul Mekatronika ED4270m (\textit{AC Servo Linear Stage Unit}) dengan penambahan beban uji eksternal berupa wadah berisi cairan.
-    \item Perangkat keras aktuasi dibatasi pada unit \textit{Servo Amplifier} Mitsubishi Melservo-J2-Super tipe MR-J2S-10A beserta unit motor servo AC internal bawaan modul ED4270m.
-    \item Parameter performa yang diukur dan dianalisis secara komparatif dibatasi pada aspek kinematika gerak aktuator meliputi akurasi target posisi, deviasi \textit{positional error}, durasi \textit{settling time}, serta dokumentasi visual riak cairan, tanpa mencakup kalkulasi efisiensi konsumsi daya listrik maupun disipasi termal pada motor.
-    \item Unit mikrokontroler \textit{dual-core} bertindak sebagai pusat kendali level rendah (\textit{low-level controller}) untuk kalkulasi algoritma lintasan dan generator pulsa, sedangkan pengiriman parameter penargetan awal (\textit{setpoint}) dilakukan melalui koneksi serial komputer.
+    \item Pengambilan data eksperimental dilakukan menggunakan Modul Mekatronika ED4270m (\textit{AC Servo Linear Stage Unit}) dengan penambahan beban uji eksternal berupa wadah berisi cairan.
+    \item Perangkat keras aktuasi dibatasi pada \textit{Servo Amplifier} Mitsubishi Melservo-J2-Super tipe MR-J2S-10A dan motor servo AC internal modul ED4270m.
+    \item Parameter performa yang dianalisis secara komparatif dibatasi pada akurasi posisi, deviasi \textit{positional error}, durasi \textit{settling time}, serta dokumentasi visual riak cairan, tanpa mencakup kalkulasi efisiensi konsumsi daya listrik maupun disipasi termal pada motor.
+    \item Mikrokontroler \textit{dual-core} bertindak sebagai \textit{low-level controller} untuk kalkulasi algoritma dan generator pulsa, sedangkan pengiriman parameter \textit{setpoint} dilakukan melalui koneksi serial dari komputer.
 \end{enumerate}

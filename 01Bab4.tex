@@ -1,8 +1,8 @@
 % ==================== BAB IV ====================
-\section{Metodologi dan Cara Kerja Sistem}
+\chapter{METODOLOGI DAN CARA KERJA SISTEM}
 \label{bab:4}
 
-\subsection{Diagram Blok Sistem Kendali}
+\section{Diagram Blok Sistem Kendali}
 Sistem kendali gerak presisi tinggi yang dirancang pada penelitian ini mengadopsi topologi lingkar tertutup (\textit{closed-loop control system}). Sistem ini memastikan aktuator linier bergerak dengan presisi tinggi melalui mekanisme umpan balik (\textit{feedback}) yang secara kontinu mengoreksi deviasi posisi. Secara garis besar, arsitektur perangkat keras dibagi menjadi dua domain utama, yaitu \textit{Digital Controller} dan \textit{Servo Power System (Plant)}.
 
 \begin{figure}[htbp]
@@ -27,7 +27,7 @@ Sesuai dengan alur pada Gambar \ref{fig:diagram_blok}, prinsip kerja sistem seca
     \item \textbf{Instrumen Evaluasi:} Respons transien dan getaran sisa (\textit{settling time}) selama motor beroperasi dievaluasi secara \textit{real-time} dengan menghubungkan \textbf{Osiloskop} ke terminal sinyal analog (MO1) pada \textit{servo amplifier}.
 \end{enumerate}
 
-\subsection{Diagram Alir Sistem Perangkat Lunak (\textit{Flowchart})}
+\section{Diagram Alir Sistem Perangkat Lunak (\textit{Flowchart})}
 Kompleksitas eksekusi algoritma gerak pada mikrokontroler \textit{dual-core} dipetakan dalam sebuah diagram alir sistem yang terbagi menjadi dua bagian berkesinambungan.
 
 \begin{figure}[htbp]
@@ -47,7 +47,7 @@ Kompleksitas eksekusi algoritma gerak pada mikrokontroler \textit{dual-core} dip
 Berdasarkan Gambar \ref{fig:flowchart_sistem}, alur kerja peranti lunak (\textit{firmware}) beroperasi dengan tahapan sebagai berikut:
 \begin{enumerate}
     \item \textbf{Inisialisasi dan Komunikasi:} Program dimulai dengan inisialisasi pin I/O, pengaturan \textit{Hardware Timer}, dan pengaktifan sistem RTOS. Sistem kemudian bersiap menerima data parameter operasional dari antarmuka PC (HMI).
-    \item \textbf{Kalkulasi Trajektori (Core 0):} Setelah data diterima, \textit{Core 0} memproses matriks \textit{trajectory planning} sesuai dengan profil gerak yang dipilih pengguna (\textit{Rectangular, Trapezoidal}, atau \textit{S-Curve}). Keluaran dari proses ini adalah parameter jeda waktu transmisi pulsa.
+    \item \textbf{Kalkulasi Trajektori (Core 0):} Setelah data diterima, \textit{Core 0} memproses matriks \textit{trajectory planning} sesuai dengan profil gerak yang dipilih pengguna (\textit{Trapezoidal} atau \textit{S-Curve}). Keluaran dari proses ini adalah parameter jeda waktu transmisi pulsa.
     \item \textbf{Eksekusi Interupsi (Core 1):} Memasuki konektor logika transisi, \textit{Core 1} mengambil alih tugas aktuasi dengan mengeksekusi \textit{Hardware Timer Interrupt}. Inti ini membangkitkan dan mengirimkan sinyal pulsa menuju sirkuit transmisi diferensial secara presisi.
     \item \textbf{Pergerakan dan Pemantauan Target:} Aktuator motor bergerak menunju target posisi yang diinstruksikan (Konektor A). Sistem secara terus-menerus memantau apakah target posisi akhir telah tercapai.
     \item \textbf{Looping atau Terminasi:} Jika target posisi belum tercapai, logika program akan berbalik (Konektor B) untuk memerintahkan \textit{Core 1} agar mengulangi siklus penembakan pulsa. Jika target telah tercapai, mikrokontroler akan menghentikan pulsa dan motor berhenti seketika.

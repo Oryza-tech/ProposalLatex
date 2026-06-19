@@ -14,9 +14,34 @@
 %dan {\pembimbingdua},{\bulan}, {\tahun}, Jumlah Halaman.
 %%----------------------------------------------------------------
 
-%% edit bagian ini
-Penelitian ini berfokus pada optimasi akurasi posisi sistem penggerak motor servo AC industri dengan mengimplementasikan algoritma \textit{trajectory planning} profil \textit{S-Curve}. Penggunaan arsitektur mikrokontroler \textit{dual-core} dilakukan untuk memisahkan beban komputasi numerik trajektori dengan pembangkitan pulsa kendali presisi. Pengujian dilakukan secara komparatif terhadap profil \textit{rectangular} dan \textit{trapezoidal} menggunakan modul mekatronika ED4270m, dengan parameter keberhasilan berupa minimalisasi osilasi mekanik dan efektivitas \textit{settling time}. Hasil penelitian diharapkan memberikan referensi sistem kendali gerak industri yang andal, murah, namun memiliki presisi tinggi.
-\\[0.6cm]
-%% edit sampai sini
+\vspace{0.2cm}
+
+Dalam aplikasi kendali gerak \textit{point-to-point} (P-T-P) berkecepatan dan
+berpresisi tinggi di ranah industri, induksi getaran struktural sisa
+(\textit{residual vibration}) akibat sentakan mekanis (\textit{jerk}) yang
+diskontinu menjadi kendala utama, terutama saat menggunakan profil kecepatan
+konvensional seperti \textit{trapezoidal}. Untuk mengatasi masalah tersebut,
+penelitian ini mengusulkan implementasi algoritma \textit{S-Curve trajectory
+planning} berorde tiga guna menekan osilasi mekanis pada sistem penggerak
+\textit{Servo Amplifier} Mitsubishi Melservo-J2-Super. Profil \textit{S-Curve}
+mampu menghasilkan transisi gerak yang sangat halus, beban komputasi integrasi
+numerik orde tiganya sangat tinggi dan berisiko memicu latensi \textit{pulse
+jitter} pada unit pemroses standar. Oleh karena itu, penelitian ini merancang
+arsitektur sistem kendali \textit{multitasking} deterministik berbasis
+\textit{dual-core microcontroller}. Beban kerja dipisahkan secara mutlak:
+\textit{Core 0} didedikasikan untuk komputasi matriks trajektor, sedangkan
+\textit{Core 1} diisolasi secara eksklusif untuk mengeksekusi \textit{hardware
+timer interrupt} guna membangkitkan pulsa kendali secara presisi. Untuk menjamin
+integritas pulsa dari interferensi elektromagnetik, sinyal ditransmisikan
+menggunakan \textit{differential line driver}. Kinerja sistem dievaluasi secara
+eksperimental dan komparatif terhadap profil konvensional menggunakan \textit{AC
+servo training kit} ED4270m berbasis aktuator mekanis presisi tinggi
+\textit{linear ball-screw}. Selain mengukur deviasi \textit{positional error}
+dan durasi waktu tenang (\textit{settling time}). Hasil
+penelitian diharapkan memberikan referensi sistem kendali gerak lingkar tertutup
+(\textit{closed-loop}) yang andal, berbiaya rendah, serta terbukti secara
+empiris mampu memperpanjang usia pakai komponen mekanis.
+
+\vspace{0.5cm}
 
 \noindent Kata kunci: \katakunci

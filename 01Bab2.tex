@@ -1,62 +1,212 @@
 \chapter{TINJAUAN PUSTAKA}
 \label{bab:2}
 
-Penelitian di bidang perencanaan lintasan (\textit{trajectory planning}) untuk optimasi performa motor servo industri terus mengalami pemutahiran, terutama dalam meminimalkan osilasi mekanis tanpa menurunkan produktivitas kecepatan gerak aktuator. Dinamika pergerakan meja geser \textit{linear stage} berbasis \textit{ball screw} sangat sensitif terhadap karakteristik turunan fungsi posisi terhadap waktu. Penggunaan profil kecepatan tradisional seperti \textit{trapezoidal} terbukti menyisakan getaran transien yang mengganggu keakuratan pembacaan akhir karena nilai \textit{jerk} yang tidak kontinu pada batas perpindahan fase \parencite{schnegas2024trajectory}. Penerapan profil gerak halus berbasis kurva linier berlapis atau \textit{S-Curve} orde tiga terbukti menjadi solusi paling efektif untuk menekan nilai komponen sentakan fisik tersebut.
+\section{Konsep Dasar \textit{Trajectory Planning}}
 
-Persamaan kinematika pembentuk profil gerak \textit{S-Curve} didasarkan pada pembatasan nilai \textit{jerk} konstan pada fase akselerasi awal dan deselerasi akhir. Persamaan kecepatan ($v$) terhadap rentang waktu ($t$) pada fase pembentukan lengkungan kurva didefinisikan melalui model matematika kuadratik berikut:
+Perencanaan lintasan (\textit{trajectory planning}) merupakan aspek fundamental dalam sistem kendali gerak presisi tinggi. Menurut \textcite{9310134}, \textit{motion profile} adalah himpunan persamaan gerak yang mendeskripsikan sentakan (\textit{jerk}), percepatan, kecepatan, dan posisi sebagai fungsi waktu:
+\[
+j = j(t), \quad a = a(t), \quad v = v(t), \quad x = x(t)
+\]
+dengan \( t = 0 \) saat sistem mulai bergerak dari keadaan diam dan \( t = T \) saat sistem berhenti sempurna pada posisi target \( x = L \). Waktu total \( T \) disebut \textit{transfer time}, sedangkan \( L \) disebut \textit{motion length}.
 
+Dalam aplikasi nyata, sistem servo memiliki batasan kinematik yang tidak boleh dilampaui untuk menjamin operasi yang aman dan normal, yaitu batas kecepatan maksimum (\(V_{max}\)), batas percepatan maksimum (\(A_{max}\)), dan batas \textit{jerk} maksimum (\(J_{max}\)) \parencite{9310134}.
+
+\section{Profil \textit{Trapezoidal}}
+
+Sebelum batas \textit{jerk} mendapat perhatian secara luas, profil
+\textit{trapezoidal} menjadi metode yang paling sering digunakan karena
+kesederhanaan algoritma implementasinya \parencite{liu2026intelligent} dan telah
+menjadi profil standar bawaan (\textit{default}) pada berbagai peranti lunak
+pengendali motor servo \parencite{schnegas2024trajectory}. Profil ini terdiri
+dari tiga fase: percepatan konstan, kecepatan konstan, dan deselerasi konstan.
+
+\section{Profil \textit{S-Curve}}
+
+Untuk mengatasi kelemahan profil \textit{trapezoidal}, dikembangkan profil
+\textit{S-Curve} (atau \textit{double-S profile}) dengan menambahkan batasan
+\textit{jerk} \parencite{9310134}. Profil \textit{S-Curve} merupakan modifikasi
+dari profil \textit{trapezoidal} yang mengganti setiap lonjakan percepatan
+dengan \textit{ramp-up} dan \textit{ramp-down} yang memiliki nilai \textit{jerk}
+konstan.
+
+\subsection{Struktur 7 Segmen Profil \textit{S-Curve}}
+
+Profil \textit{S-Curve} umumnya terdiri dari 7 segmen seperti ditunjukkan pada Gambar \ref{fig:s_curve_segments}. Tujuh segmen tersebut adalah:
+\begin{enumerate}
+    \item Fase \textit{jerk} positif konstan (percepatan naik)
+    \item Fase percepatan konstan
+    \item Fase \textit{jerk} negatif konstan (percepatan turun menuju nol)
+    \item Fase kecepatan konstan
+    \item Fase \textit{jerk} negatif konstan (deselerasi naik)
+    \item Fase deselerasi konstan
+    \item Fase \textit{jerk} positif konstan (deselerasi turun menuju nol)
+\end{enumerate}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Gambar/s_curve_7segments_detailed.png}
+    \captionsetup{justification=centering}
+    \caption{Profil \textit{S-Curve} 7 segmen dengan grafik \textit{jerk}, percepatan, kecepatan, dan posisi (diadaptasi dari \textcite{9310134})}
+    \label{fig:s_curve_segments}
+\end{figure}
+
+Tiga parameter waktu utama dalam profil \textit{S-Curve} adalah:
+\begin{itemize}
+    \item \(T_j\): \textit{constant-jerk time}
+    \item \(T_A\): \textit{constant-acceleration time}
+    \item \(T_V\): \textit{constant-velocity time}
+\end{itemize}
+
+Hubungan antara ketiga parameter tersebut dengan \textit{transfer time} total \(T\) adalah:
+\begin{equation}
+T = 4T_j + 2T_A + T_V
+\label{eq:transfer_time}
+\end{equation}
+
+\subsection{Persamaan Kinematika \textit{S-Curve}}
+
+Persamaan kinematika pembentuk profil \textit{S-Curve} didasarkan pada
+pembatasan nilai \textit{jerk} konstan. Pada fase pembentukan lengkungan kurva,
+fungsi kecepatan didefinisikan melalui model matematika kuadratik:
 \begin{equation}
 v(t) = c_0 + c_1t + c_2t^2
+\label{eq:velocity_quadratic}
 \end{equation}
 
-Di mana $c_0, c_1,$ dan $c_2$ merupakan koefisien polinomial konstan yang merepresentasikan kondisi batas transisi kecepatan awal. Dari persamaan fungsi kecepatan kuadratik di atas, fungsi percepatan ($a$) dan fungsi sentakan (\textit{jerk}, $j$) secara sistematis diturunkan melalui operasi diferensial kalkulus berurutan sebagai berikut:
-
+Dari persamaan tersebut, fungsi percepatan dan \textit{jerk} diturunkan secara berurutan:
 \begin{equation}
 a(t) = \frac{dv(t)}{dt} = c_1 + 2c_2t
+\label{eq:acceleration}
 \end{equation}
-
 \begin{equation}
 j(t) = \frac{da(t)}{dt} = \frac{d^2v(t)}{dt^2} = 2c_2
+\label{eq:jerk_constant}
 \end{equation}
 
-Berdasarkan Persamaan (3), terlihat jelas bahwa nilai \textit{jerk} dikunci pada nilai konstan linear ($2c_2$), yang berarti laju percepatan motor servo berubah secara kontinu, bukan melonjak seketika secara ekstrem seperti pada kasus profil \textit{trapezoidal}. Namun, implikasi dari implementasi formula matematis ini adalah tingginya beban pemrosesan pada unit komputasi tertanam karena prosesor harus menghitung matriks kalkulasi polinomial tersebut secara berulang pada tiap interupsi \textit{timer} \parencite{liu2023time}. 
+Berdasarkan Persamaan \ref{eq:jerk_constant}, nilai \textit{jerk} terkunci pada nilai konstan, yang berarti laju percepatan berubah secara kontinu, bukan melonjak seketika seperti pada profil \textit{trapezoidal} \parencite{9310134}.
 
-Pemanfaatan arsitektur prosesor berinti ganda (\textit{dual-core}) memberikan lompatan teknologi yang masif, di mana isolasi proses interupsi generator pulsa dapat dipisahkan secara fisik dari sub-rutin kalkulasi persamaan kuadratik \textit{S-Curve} \parencite{liu2026intelligent}. Di samping itu, keandalan sistem penggerak servo di area industri sangat dipengaruhi oleh kualitas fisik pengiriman sinyal kontrol. Sinyal pulsa berkecepatan tinggi berfrekuensi tinggi rawan terdistorsi oleh interferensi elektromagnetik akibat induksi medan magnet motor dan pensaklaran inverter internal \textit{servo amplifier}. Penggunaan pengkabelan berpasangan terpilin yang digerakkan oleh sirkuit terintegrasi \textit{differential line driver} merupakan syarat mutlak untuk menjamin kestabilan pengiriman pulsa kontrol tanpa kehilangan data \parencite{li2017implementation}.
+Hubungan antara parameter-parameter kinematik dalam profil \textit{S-Curve} dinyatakan dalam persamaan berikut:
+\begin{equation}
+A = JT_j
+\label{eq:A_J}
+\end{equation}
+\begin{equation}
+V = A(T_j + T_A)
+\label{eq:V_A}
+\end{equation}
+\begin{equation}
+L = V(2T_j + T_A + T_V)
+\label{eq:L_V}
+\end{equation}
 
-Untuk memetakan posisi kebaruan (\textit{novelty}) dari penelitian ini terhadap rekam jejak riset terdahulu, disusunlah sebuah matriks komparasi pustaka komprehensif yang disajikan pada Tabel \ref{tab:komparasi}.
+Dari ketiga persamaan tersebut, durasi setiap fase dapat dihitung sebagai:
+\begin{equation}
+T_j = \frac{A}{J}, \quad T_A = \frac{V}{A} - \frac{A}{J}, \quad T_V = \frac{L}{V} - \frac{V}{A} - \frac{A}{J}
+\label{eq:time_params}
+\end{equation}
+
+\subsection{Klasifikasi Profil \textit{S-Curve}}
+
+Berdasarkan apakah batas kecepatan dan percepatan tercapai, profil \textit{S-Curve} time-optimal diklasifikasikan menjadi empat tipe:
+
+\begin{enumerate}
+    \item \textbf{7-segmen}: Kedua batas (kecepatan dan percepatan) tercapai (\(T_A > 0, T_V > 0\))
+    \item \textbf{5-segmen Tipe-A}: Hanya batas percepatan tercapai (\(T_A > 0, T_V = 0\))
+    \item \textbf{5-segmen Tipe-B}: Hanya batas kecepatan tercapai (\(T_A = 0, T_V > 0\))
+    \item \textbf{3-segmen}: Tidak ada batas yang tercapai (\(T_A = 0, T_V = 0\))
+\end{enumerate}
+
+Pemilihan tipe ditentukan oleh rasio \(R = \frac{V_{max}J_{max}}{A_{max}^2}\) dan panjang lintasan \(L\) \parencite{9310134}. Klasifikasi ini penting karena menentukan bentuk profil yang dihasilkan oleh algoritma perencanaan lintasan.
+
+\section{Perkembangan Terkini Profil \textit{S-Curve} Orde Tinggi}
+
+Perkembangan terkini menunjukkan bahwa profil \textit{S-Curve} orde lebih tinggi dapat memberikan \textit{smoothness} yang lebih baik dan reduksi getaran yang lebih efektif. \textcite{tatte2026optimized} memperkenalkan metode \textit{Critical Motion Parameter} (CMP) untuk mengoptimalkan profil \textit{15-segmen fourth-order symmetric S-Curve} (15-SFOS) tanpa perlu mengetahui dinamika sistem secara eksplisit. 
+
+Metode CMP memiliki keunggulan sebagai berikut:
+\begin{enumerate}
+    \item Memungkinkan minimisasi respons \textit{residual vibration} tanpa memerlukan dinamika sistem
+    \item Sederhana dan efisien karena optimasi dapat dilakukan menggunakan salah satu dari tiga CMP: \textit{critical acceleration}, \textit{critical jerk}, dan \textit{critical snap}
+    \item Profil 15-SFOS memiliki \textit{smoothness} yang lebih tinggi, memungkinkan reduksi \textit{residual vibration} yang lebih efektif dibandingkan profil orde rendah
+    \item Karakteristik profil disajikan dalam bentuk \textit{nomograms} yang memudahkan penentuan parameter
+\end{enumerate}
+
+Meskipun demikian, implementasi profil orde-4 membutuhkan beban komputasi yang lebih tinggi dibandingkan profil orde-3 \parencite{tatte2026optimized}. Oleh karena itu, untuk sistem tertanam dengan sumber daya terbatas seperti pada penelitian ini, profil \textit{S-Curve} orde-3 tetap menjadi pilihan yang relevan.
+
+\section{Arsitektur \textit{Dual-Core} untuk Sistem Tertanam}
+
+Implementasi algoritma \textit{S-Curve} pada sistem tertanam menghadapi kendala
+komputasi yang signifikan. Perhitungan polinomial orde tiga secara berulang
+dikonfirmasi meningkatkan kompleksitas algoritma sistem kendali
+\parencite{liu2023time}. Pada praktiknya, operasi kuadratik dan pembagian
+pecahan secara simultan dalam orde mikrodetik menjadi beban yang teramat berat
+bagi prosesor \textit{single-core} standar. Oleh sebab itu, pemanfaatan
+arsitektur prosesor berinti ganda (\textit{dual-core}) diusulkan dalam
+penelitian ini sebagai landasan arsitektur guna mengisolasi proses interupsi
+generator pulsa secara fisik dari rutinitas kalkulasi matriks \textit{S-Curve}.
+Dengan pemisahan tugas yang deterministik ini, \textit{jitter} pada sinyal
+keluaran dapat dihindari sepenuhnya dan akurasi posisi aktuator tetap terjaga.
+
+\section{Integritas Transmisi Sinyal}
+
+Keandalan sistem penggerak servo di lapangan sangat dipengaruhi oleh kualitas
+fisik pengiriman sinyal kontrol. Sinyal pulsa berkecepatan tinggi sangat rawan
+terdistorsi oleh interferensi elektromagnetik (EMI) akibat induksi medan magnet
+motor bertenaga tinggi dan pensaklaran (\textit{switching}) inverter internal
+\textit{servo amplifier}. Penggunaan \textit{differential line driver}
+berstandar RS-422 dengan mekanisme penolakan modus bersama (\textit{common-mode
+rejection}) menjadi rancangan mutlak pada tingkat perangkat keras untuk menjamin
+kestabilan transmisi pulsa kontrol tanpa kehilangan data. Sirkuit penggerak
+(\textit{driver}) ini bertugas mengubah sinyal pulsa \textit{single-ended} dari
+mikrokontroler menjadi sepasang sinyal diferensial yang kebal terhadap derau
+lingkungan eksternal.
+
+\section{Posisi Kebaruan Penelitian}
+
+Untuk memetakan posisi kebaruan (\textit{novelty}) dari penelitian ini, disusun
+matriks komparasi pustaka pada Tabel \ref{tab:komparasi}.
+\newpage
 
 \begin{table}[htbp]
 \centering
 \caption{Matriks Perbandingan Tinjauan Pustaka}
 \label{tab:komparasi}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{lccccc}
+\begin{tabular}{lcccccc}
 \toprule
-\textbf{Parameter Perbandingan} & \textbf{[1]} & \textbf{[2]} & \textbf{[3]} & \textbf{[4]} & \textbf{Tugas Akhir} \\ \midrule
-\textbf{Profil Pergerakan} & & & & & \\
-- \textit{Rectangular} & & & & & \textbf{$\checkmark$} \\
-- \textit{Trapezoidal} & & & & $\checkmark$ & \textbf{$\checkmark$} \\
-- \textit{S-Curve} & $\checkmark$ & $\checkmark$ & $\checkmark$ & & \textbf{$\checkmark$} \\ \midrule
-\textbf{Sistem Pemroses} & & & & & \\
-- \textit{Single-Core / Standar} & & $\checkmark$ & & & \\
-- \textit{Dual-Core} & & & & & \textbf{$\checkmark$} \\
-- \textit{PLC / PC / Industri} & $\checkmark$ & & $\checkmark$ & $\checkmark$ & \\ \midrule
-\textbf{Antarmuka Sinyal} & & & & & \\
-- \textit{Open Collector} & & $\checkmark$ & & $\checkmark$ & \\
-- \textit{Diff. Line Driver / High Speed} & $\checkmark$ & & $\checkmark$ & & \textbf{$\checkmark$} \\ \midrule
-\textbf{Aktuator Pengujian} & & & & & \\
-- \textit{Simulasi / Manipulator} & & $\checkmark$ & & & \\
-- \textit{Linear Stage / Modul Servo} & $\checkmark$ & & $\checkmark$ & $\checkmark$ & \textbf{$\checkmark$} \\ \midrule
-\textbf{Skenario Evaluasi Getaran} & & & & & \\
-- \textit{Mathematical Analysis Only} & & $\checkmark$ & & & \\
-- \textit{Sensor / Encoder Analysis} & $\checkmark$ & & $\checkmark$ & $\checkmark$ & \textbf{$\checkmark$} \\
-- \textit{Liquid Slosh Physical Test} & & & & & \textbf{$\checkmark$} \\ \bottomrule
+\textbf{Parameter Perbandingan} & \textbf{[1]} & \textbf{[2]} & \textbf{[3]} & \textbf{[4]} & \textbf{[5]} & \textbf{Tugas Akhir} \\ \midrule
+\textbf{Profil Pergerakan} & & & & & & \\
+- \textit{Trapezoidal} & & & & $\checkmark$ & & \textbf{$\checkmark$} \\
+- \textit{S-Curve} (3\textsuperscript{rd} order) & $\checkmark$ & $\checkmark$ & $\checkmark$ & & $\checkmark$ & \textbf{$\checkmark$} \\
+- \textit{S-Curve} (4\textsuperscript{th} order) & & & & & $\checkmark$ & \\ \midrule
+\textbf{Sistem Pemroses} & & & & & & \\
+- \textit{Single-Core / Standar} & & $\checkmark$ & & & & \\
+- \textit{Dual-Core} & & & & & & \textbf{$\checkmark$} \\
+- \textit{PLC / PC / Industri} & $\checkmark$ & & $\checkmark$ & $\checkmark$ & $\checkmark$ & \\ \midrule
+\textbf{Antarmuka Sinyal} & & & & & & \\
+- \textit{Open Collector} & & $\checkmark$ & & $\checkmark$ & & \\
+- \textit{Diff. Line Driver / High Speed} & $\checkmark$ & & $\checkmark$ & & & \textbf{$\checkmark$} \\ \midrule
+\textbf{Aktuator Pengujian} & & & & & & \\
+- \textit{Simulasi / Manipulator} & & $\checkmark$ & & & & \\
+- \textit{Linear Stage / Modul Servo} & $\checkmark$ & & $\checkmark$ & $\checkmark$ & & \textbf{$\checkmark$} \\ \midrule
+\textbf{Skenario Evaluasi Getaran} & & & & & & \\
+- \textit{Mathematical Analysis Only} & & $\checkmark$ & & & & \\
+- \textit{Sensor / Encoder Analysis} & $\checkmark$ & & $\checkmark$ & $\checkmark$ & $\checkmark$ & \textbf{$\checkmark$} \\
+- \textit{Liquid Slosh Physical Test} & & & & & & \textbf{$\checkmark$} \\ \bottomrule
 \end{tabular}%
 }
 \end{table}
 
-Melalui analisis mendalam terhadap isi Tabel \ref{tab:komparasi}, terlihat dengan jelas posisi kebaruan dari penelitian tugas akhir ini. Riset oleh \textcite{liu2023time} berfokus sangat kuat pada perancangan matematis optimasi S-Curve dan pembatasan nilai \textit{jerk}, namun metode pembuktiannya masih didominasi oleh simulasi perangkat lunak atau diaplikasikan pada kontrol manipulator robotik standar yang diproses menggunakan inti tunggal. 
+Keterangan nomor referensi pada Tabel \ref{tab:komparasi} merujuk pada:
+[1] \textcite{li2017implementation},
+[2] \textcite{liu2023time},
+[3] \textcite{liu2026intelligent},
+[4] \textcite{schnegas2024trajectory},
+[5] \textcite{tatte2026optimized}
 
-Di sisi lain, riset terapan industri yang dilakukan oleh \textcite{li2017implementation}, \textcite{liu2026intelligent}, serta \textcite{schnegas2024trajectory} telah menguji performa S-Curve langsung pada perangkat keras penggerak servo linier nyata, tetapi arsitektur sistem pengontrolnya bersandar pada perangkat PC industri komersial, PLC kelas atas, atau pengontrol CNC internal bawaan pabrikan yang bersifat sistem tertutup \textit{(closed architecture)}. 
-
-Selain itu, hampir seluruh referensi literatur yang ada langsung melompati perbandingan ke profil canggih tanpa menyertakan analisis dasar terhadap profil \textit{rectangular}, serta hanya mengandalkan grafik data numerik dari perangkat lunak untuk menganalisis respons getaran. Penelitian tugas akhir ini mengisi celah kosong tersebut dengan merancang pengujian komparatif tiga profil gerak (\textit{rectangular, trapezoidal, S-Curve}) di dalam satu sistem kontrol tertanam berbasis mikrokontroler \textit{dual-core} mandiri berbiaya rendah dengan transmisi \textit{differential line driver}. Selanjutnya, validasi empiris performa peredaman getaran dibuktikan secara fisik, visual, dan eksperimental melalui pengamatan langsung terhadap efek riak air pada pengujian \textit{liquid slosh control}. Keterangan nomor referensi pada Tabel 1 merujuk pada: [1] \textcite{li2017implementation}, [2] \textcite{liu2023time}, [3] \textcite{liu2026intelligent}, dan [4] \textcite{schnegas2024trajectory}.
+Berdasarkan analisis matriks tersebut, posisi kebaruan penelitian ini adalah:
+\begin{enumerate}
+    \item Implementasi \textit{S-Curve trajectory planning} pada mikrokontroler \textit{dual-core} berbiaya rendah
+    \item Pengujian komparatif dua profil gerak (\textit{trapezoidal} dan \textit{S-Curve}) dalam satu sistem
+    \item Validasi empiris peredaman getaran melalui metode \textit{liquid slosh control} yang bersifat visual dan fisikal
+    \item Transmisi sinyal menggunakan \textit{differential line driver} untuk menjamin integritas sinyal
+\end{enumerate}
