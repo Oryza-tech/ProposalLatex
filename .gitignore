@@ -12,4 +12,4 @@
 *.fdb_latexmk
 
 # PDF hasil compile
-*.pdf
+# *.pdf
