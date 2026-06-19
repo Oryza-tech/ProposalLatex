@@ -104,6 +104,22 @@ Agar penelitian tetap fokus dan terukur, batasan masalah ditetapkan sebagai beri
 \begin{enumerate}
     \item Pengambilan data eksperimental dilakukan menggunakan Modul Mekatronika ED4270m (\textit{AC Servo Linear Stage Unit}) dengan penambahan beban uji eksternal berupa wadah berisi cairan.
     \item Perangkat keras aktuasi dibatasi pada \textit{Servo Amplifier} Mitsubishi Melservo-J2-Super tipe MR-J2S-10A dan motor servo AC internal modul ED4270m.
-    \item Parameter performa yang dianalisis secara komparatif dibatasi pada akurasi posisi, deviasi \textit{positional error}, durasi \textit{settling time}, serta dokumentasi visual riak cairan, tanpa mencakup kalkulasi efisiensi konsumsi daya listrik maupun disipasi termal pada motor.
+    \item Parameter performa yang dianalisis secara komparatif dibatasi pada akurasi posisi, deviasi \textit{positional error}, durasi \textit{settling time}, tanpa mencakup kalkulasi efisiensi konsumsi daya listrik maupun disipasi termal pada motor.
     \item Mikrokontroler \textit{dual-core} bertindak sebagai \textit{low-level controller} untuk kalkulasi algoritma dan generator pulsa, sedangkan pengiriman parameter \textit{setpoint} dilakukan melalui koneksi serial dari komputer.
 \end{enumerate}
+
+\section{Hipotesis Penelitian}
+
+Berdasarkan rumusan masalah dan tinjauan pustaka yang telah diuraikan pada Bab II, hipotesis dalam penelitian ini dirumuskan sebagai berikut:
+
+\begin{enumerate}
+    \item \textbf{H1}: Implementasi algoritma \textit{S-Curve trajectory planning} menghasilkan durasi waktu tenang (\textit{settling time}) yang lebih singkat dan kesalahan posisi (\textit{positional error}) yang lebih kecil dibandingkan profil \textit{trapezoidal} pada sistem kendali motor servo AC.
+
+    \item \textbf{H2}: Profil \textit{S-Curve} mampu meredam osilasi mekanis dan getaran sisa (\textit{residual vibration}) secara signifikan dibandingkan profil \textit{trapezoidal}, yang ditunjukkan melalui tingkat riak permukaan cairan yang lebih rendah pada uji \textit{liquid slosh control}.
+
+    \item \textbf{H3}: Pemisahan beban komputasi menggunakan arsitektur \textit{dual-core} (Core 0 untuk kalkulasi trajektori dan Core 1 untuk generator pulsa) berhasil meminimalkan \textit{jitter} sinyal pulsa, sehingga menjaga akurasi posisi aktuator secara \textit{real-time}.
+
+    \item \textbf{H4}: Penggunaan sirkuit \textit{differential line driver} berstandar RS-422 mampu menjaga integritas transmisi sinyal pulsa frekuensi tinggi dari interferensi elektromagnetik (EMI) pada lingkungan pengujian.
+\end{enumerate}
+
+Hipotesis-hipotesis tersebut akan diuji secara eksperimental melalui perbandingan parameter kinerja antara profil \textit{trapezoidal} dan \textit{S-Curve} pada modul ED4270m.

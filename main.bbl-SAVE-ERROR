@@ -19,6 +19,61 @@
 
 \refsection{0}
   \datalist[entry]{nyt/global//global/global/global}
+    \entry{fang2023sinusoidal}{article}{}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=49a9a9c965001db641ceb0e392d3b385}{%
+           family={Fang},
+           familyi={F\bibinitperiod},
+           given={Yi},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=1f541409e3a219d2330b106d9ada7c77}{%
+           family={Zhu},
+           familyi={Z\bibinitperiod},
+           given={Guo-Niu},
+           giveni={G\bibinithyphendelim N\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=1a3f4638d183bcde9b8d3c344ca7cf0d}{%
+           family={Zhao},
+           familyi={Z\bibinitperiod},
+           given={Yudi},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=612021babdd62676f08cd358c9e8fbe3}{%
+           family={Gu},
+           familyi={G\bibinitperiod},
+           given={Chaochen},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {MDPI}%
+      }
+      \strng{namehash}{1626a177d50a539504b575ad71fd7cea}
+      \strng{fullhash}{69930cbc93e34cb44cd479ac622ab810}
+      \strng{fullhashraw}{69930cbc93e34cb44cd479ac622ab810}
+      \strng{bibnamehash}{1626a177d50a539504b575ad71fd7cea}
+      \strng{authorbibnamehash}{1626a177d50a539504b575ad71fd7cea}
+      \strng{authornamehash}{1626a177d50a539504b575ad71fd7cea}
+      \strng{authorfullhash}{69930cbc93e34cb44cd479ac622ab810}
+      \strng{authorfullhashraw}{69930cbc93e34cb44cd479ac622ab810}
+      \field{sortinit}{F}
+      \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Applied Sciences}
+      \field{number}{24}
+      \field{title}{Design Procedure for Motion Profiles with Sinusoidal Jerk for Vibration Reduction}
+      \field{volume}{13}
+      \field{year}{2023}
+      \field{pages}{13320}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.3390/app132413320
+      \endverb
+    \endentry
     \entry{li2017implementation}{article}{}{}
       \name{author}{6}{}{%
         {{un=0,uniquepart=base,hash=e16c2dbc9de83b1e4abe905d2b6d3045}{%
@@ -82,7 +137,7 @@
       \field{pages}{2535\bibrangedash 2545}
       \range{pages}{11}
     \endentry
-    \entry{liu2024intelligent}{article}{}{}
+    \entry{liu2026intelligent}{article}{}{}
       \name{author}{6}{}{%
         {{un=1,uniquepart=given,hash=5f5501ee3881a72f69061a6d21e20416}{%
            family={Liu},
@@ -210,6 +265,39 @@
       \field{pages}{3074}
       \range{pages}{1}
     \endentry
+    \entry{9310134}{inproceedings}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=1b021757c9baa166e570dc89449d5467}{%
+           family={Nam},
+           familyi={N\bibinitperiod},
+           given={Nguyen\bibnamedelima Quang},
+           giveni={N\bibinitperiod\bibinitdelim Q\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{1b021757c9baa166e570dc89449d5467}
+      \strng{fullhash}{1b021757c9baa166e570dc89449d5467}
+      \strng{fullhashraw}{1b021757c9baa166e570dc89449d5467}
+      \strng{bibnamehash}{1b021757c9baa166e570dc89449d5467}
+      \strng{authorbibnamehash}{1b021757c9baa166e570dc89449d5467}
+      \strng{authornamehash}{1b021757c9baa166e570dc89449d5467}
+      \strng{authorfullhash}{1b021757c9baa166e570dc89449d5467}
+      \strng{authorfullhashraw}{1b021757c9baa166e570dc89449d5467}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{2020 International Conference on Advanced Mechatronic Systems (ICAMechS)}
+      \field{title}{Characteristics of S-curve motion profile for all ranges of motion length and limits}
+      \field{year}{2020}
+      \field{pages}{214\bibrangedash 220}
+      \range{pages}{7}
+      \verb{doi}
+      \verb 10.1109/ICAMechS49982.2020.9310134
+      \endverb
+      \keyw{Planning;Motion segmentation;Energy loss;Computational modeling;Vibrations;Accelerometers;Mathematical models;motion control;S-curve profile;time-optimal motion profile planning;point-to-point motion;transfer time;energy loss}
+    \endentry
     \entry{schnegas2024trajectory}{article}{}{}
       \name{author}{2}{}{%
         {{un=0,uniquepart=base,hash=993033eec045bc12f2388c72ff14bcfc}{%
@@ -249,6 +337,57 @@
       \field{year}{2024}
       \field{pages}{934}
       \range{pages}{1}
+    \endentry
+    \entry{tatte2026optimized}{article}{}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=68493c9a38180eaec8690e8ffccf07cc}{%
+           family={Tatte},
+           familyi={T\bibinitperiod},
+           given={Rupesh},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=cb8940a7862de9b8987dc4d92262fad5}{%
+           family={Jawale},
+           familyi={J\bibinitperiod},
+           given={H.\bibnamedelimi P.},
+           giveni={H\bibinitperiod\bibinitdelim P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=da191fc10fa32591ec489ed4cff1e1d0}{%
+           family={Thorat},
+           familyi={T\bibinitperiod},
+           given={H.\bibnamedelimi T.},
+           giveni={H\bibinitperiod\bibinitdelim T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=908b421390047dbd256c6d965de38be5}{%
+           family={Jaiswal},
+           familyi={J\bibinitperiod},
+           given={Ankur},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {IEEE}%
+      }
+      \strng{namehash}{2b963e7a54d520c697a45d9e74b36af8}
+      \strng{fullhash}{dc8bf3378fb3a100d412a228bc294dca}
+      \strng{fullhashraw}{dc8bf3378fb3a100d412a228bc294dca}
+      \strng{bibnamehash}{2b963e7a54d520c697a45d9e74b36af8}
+      \strng{authorbibnamehash}{2b963e7a54d520c697a45d9e74b36af8}
+      \strng{authornamehash}{2b963e7a54d520c697a45d9e74b36af8}
+      \strng{authorfullhash}{dc8bf3378fb3a100d412a228bc294dca}
+      \strng{authorfullhashraw}{dc8bf3378fb3a100d412a228bc294dca}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{IEEE Access}
+      \field{title}{Optimized Fourth-Order Symmetric S-Curve Trajectory for Vibration Control in Dynamic Systems}
+      \field{volume}{14}
+      \field{year}{2026}
+      \field{pages}{8734\bibrangedash 8753}
+      \range{pages}{20}
     \endentry
   \enddatalist
 \endrefsection
